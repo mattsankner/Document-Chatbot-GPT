@@ -12,10 +12,6 @@ from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
 import os
 import gradio as gr
-#import openai
-import sys
-
-print(sys.path)
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_KEY_HERE"
 
