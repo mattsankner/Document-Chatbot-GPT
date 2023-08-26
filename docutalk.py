@@ -7,15 +7,15 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.retrievers.multi_query import MultiQueryRetriever
-from langchain.chains import RetrievalQA
+from langchain.chains import RetrievalQA, RetrievalQAWithSourcesChain
 from langchain.prompts import PromptTemplate
+from langchain.memory import ConversationBufferMemory
 import os
 import gradio as gr
 #import openai
 import sys
 
 print(sys.path)
-
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_KEY_HERE"
 
@@ -31,6 +31,8 @@ Question: {question}
 Helpful Answer:"""
 )
 
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
 # Process a given URL and set up the QA chain
 def setup_chain(url):
     loader = WebBaseLoader(url)
@@ -38,24 +40,25 @@ def setup_chain(url):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
     all_splits = text_splitter.split_documents(data)
     vectorstore = Chroma.from_documents(documents=all_splits, embedding=OpenAIEmbeddings())
-    qa_chain = RetrievalQA.from_chain_type(llm, retriever=vectorstore.as_retriever(), chain_type_kwargs={"prompt": QA_CHAIN_PROMPT})
+    qa_chain = RetrievalQAWithSourcesChain.from_chain_type(llm, retriever=vectorstore.as_retriever())
     return qa_chain
 
 # Gradio Interface Function
 def process_input(url, query):
     qa_chain = setup_chain(url)
-    result = qa_chain({"query": query})
-    return result["result"]
+    result = qa_chain({"question": query})
+    answer = result.get("answer", "No answer found.")
+    citations = "\n".join(result.get("source_documents", []))
+    return f"Answer: {answer}\n\nCitations:\n{citations}"
 
 # Create the Gradio Interface
 iface = gr.Interface(
     fn=process_input,
     inputs=[gr.inputs.Textbox(placeholder="Enter a URL..."), gr.inputs.Textbox(placeholder="Ask a question...")],
-    outputs="Answer",
+    outputs=gr.outputs.Textbox(label="Answer with Citations"),
     live=True,
     capture_session=True,
 )
 
 # Launch the Gradio Interface
 iface.launch(share=True)
-
