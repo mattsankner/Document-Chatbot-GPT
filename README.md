@@ -1,4 +1,4 @@
-# LangChain/OpenAI Web Query Interface
+# LangChain/OpenAI Document Query Interface
 This repository contains a web-based interface leveraging the power of LangChain to allow users to query any web document and retrieve concise answers with citations.
 
 ## Features:
