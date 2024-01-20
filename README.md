@@ -1,9 +1,8 @@
-# LangChain/OpenAI Document Query Interface
-This repository contains a web-based interface leveraging the power of LangChain to allow users to query any web document and retrieve concise answers with citations.
+# Document-Chatbot-GPT
+Query any web document and retrieve concise answers with citations leveraging the power of LangChain's text splitting, embeddings, and vector storage. 
 
 ## Features:
 - LangChain: Highlights LangChain Functions and knowledge in text spitting, embedding creation, and vector storage
-- Web-Based Interface: Simple and easy-to-use interface for users to enter URLs and ask questions.
 - Citations Provided: Alongside the answer, the tool returns the relevant citations from the document.
 - Built with Gradio: Utilizes Gradio to create a fast and lightweight web interface.
 
